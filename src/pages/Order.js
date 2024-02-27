@@ -1,8 +1,14 @@
 import PropTypes from "prop-types";
 import styles from "../style/Order.module.css";
 import { useNavigate } from "react-router-dom";
+import { QuerySnapshot, collection, getDocs, getFirestore, query } from "firebase/firestore";
+import { firestore } from "../firebase";
+import React, { useState, useEffect } from "react";
 
 function Order() {
+
+  const [menus, setMenus] = useState([]);
+  const db = getFirestore();
   const navigate = useNavigate();
   const goToSplash = () => {
     window.history.back();
@@ -10,6 +16,19 @@ function Order() {
   const goToBasket = () => {
     navigate("/basket");
   };
+  useEffect(() => {
+    getDocs(query(collection(db, "menu"))).then((QuerySnapshot) => {
+      const firestoreMenuList = [];
+      QuerySnapshot.forEach((doc) => {
+        firestoreMenuList.push({
+          name: doc.data().name,
+        });
+      });
+      setMenus(firestoreMenuList);
+    });
+  }, []);
+  //console.log(menus);
+
   return (
     <div className={styles.container}>
       <div className={styles.tabBar}>
