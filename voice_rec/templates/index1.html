@@ -1,0 +1,31 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Recognition</title>
+</head>
+<body>
+    <h1>Speech Recognition</h1>
+    <button id="startBtn">Start Recognition</button>
+    <div id="transcript"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).on('click', '#startBtn', function() {
+                // AJAX 요청 보내기
+                $.ajax({
+                    type: "GET",
+                    url: "/recognize_speech",
+                    success: function(response) {
+                        // AJAX 요청의 결과를 처리
+                        $("#transcript").text(response.transcript);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
