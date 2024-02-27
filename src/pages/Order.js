@@ -20,9 +20,7 @@ function Order() {
     getDocs(query(collection(db, "menu"))).then((QuerySnapshot) => {
       const firestoreMenuList = [];
       QuerySnapshot.forEach((doc) => {
-        firestoreMenuList.push({
-          name: doc.data().name,
-        });
+        firestoreMenuList.push(doc.data().name);
       });
       setMenus(firestoreMenuList);
     });
