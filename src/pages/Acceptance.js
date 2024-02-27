@@ -4,8 +4,12 @@ import styles from "../style/Acceptance.module.css";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { firestore } from "../firebase";
+import { QuerySnapshot, collection, getDocs, getFirestore } from "firebase/firestore";
 
 function Payment() {
+  const db = getFirestore();
+  
   const [menuCounts, setMenuCounts] = useState({
     handmadeCutlet: 1,
     longNamedMenu: 1,
@@ -14,6 +18,26 @@ function Payment() {
     handmadeCutlet: 12000,
     longNamedMenu: 9000,
   });
+
+  //const [menuCounts, setMenuCounts] = useState([]);
+  //const [menuCosts, setMenuCosts] = useState([]);
+
+  /*
+  useEffect(() => {
+    getDocs(collection(db, "menu")).then((querySnapshot) => {
+      const firestoreMenuList = [];
+      querySnapshot.forEach((doc) => {
+        firestoreMenuList.push({
+          name: doc.name,
+          count: doc.data().count,
+          cost: doc.data(),cost,
+        });
+      });
+      setMenuCounts(firestoreMenuList);
+    });
+  }, []);
+  */
+  
 
   const navigate = useNavigate();
   const goToHome = () => {

@@ -1,19 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styles from "../style/Basket.module.css";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, addDoc, deleteDoc, getDocs, doc, setDoc } from "firebase/firestore"
+import { getFirestore, addDoc, deleteDoc, getDocs, doc, setDoc, query, orderBy, collection, QuerySnapshot } from "firebase/firestore"
 import { firestore } from "../firebase";
 
 function Basket() {
+
+  const db = getFirestore();
+
   // 현재는 주문할 메뉴를 가정해놓은 상태
   // 앞 단계에서 음성인식으로 주문한 메뉴들의 이름을 가져오는 작업 필요
+  
   const [menuCounts, setMenuCounts] = useState({
     handmadeCutlet: 1,
     longNamedMenu: 1,
     kimchiStew: 1,
     soybeanStew: 1,
   });
+  
+
+  /*
+  const [menuCounts, setMenuCounts] = useState([]);
+
+  useEffect(() => {
+    getDocs(collection(db, "basket")).then((QuerySnapshot) => {
+      const firestoreMenuList = [];
+      QuerySnapshot.forEach((doc) => {
+        firestoreMenuList.push({
+          name: doc.data().name,
+          count: doc.data().count ?? 1,
+          cost: doc.data().cost,
+        });
+      });
+      setMenuCounts(firestoreMenuList);
+    });
+  }, []);
+  */
 
   const navigate = useNavigate();
   const goToPayment = () => {
@@ -46,7 +69,6 @@ function Basket() {
     }));
   };
 
-  const db = getFirestore();
 
   return (
     <div className={styles.container}>
