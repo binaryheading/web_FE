@@ -7,8 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1yGyheD4La2ppPLBmrdbous8RpWQhEUSb
 """
 
-pip install kiwipiepy
-
 from key_extraction import keywordExtractor
 from transformers import ElectraModel, ElectraTokenizerFast
 import numpy as np
@@ -20,10 +18,10 @@ model = ElectraModel.from_pretrained(name)
 tokenizer = ElectraTokenizerFast.from_pretrained(name)
 
 # load keywordExtractor
-key = keywordExtractor(model,tokenizer,dir='/content/eng_han.csv')
+key = keywordExtractor(model,tokenizer,dir='files\eng_han.csv')
 
 # load scraping_data
-scraping_result = pd.read_csv('/content/binaryproject.csv')
+scraping_result = pd.read_csv('files\binaryproject.csv')
 print('음식 데이터 수 : ', len(scraping_result))
 print('')
 scraping_result.head()
@@ -57,13 +55,6 @@ data_search = pd.DataFrame(new_data)
 
 data_search.to_csv('data_for_search.csv', index = False)
 
-# .dataframe tbody tr th {
-#     vertical-align: top;
-# }
-
-# .dataframe thead th {
-#     text-align: right;
-# }
 
 min_count = 2
 min_length = 2
@@ -107,8 +98,6 @@ print(f'{result[:10]}.... \n \n')
 keyword_embedding = key.create_keyword_embedding(doc)
 doc_embedding = key.create_doc_embedding(doc)
 
-print(doc)
-print(doc.name)
 
 co_sim_score =key._calc_cosine_similarity(doc_embedding, keyword_embedding).flatten()
 
