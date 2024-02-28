@@ -12,6 +12,8 @@ import {
   getFirestore,
   query,
   orderBy,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 
 function Payment() {
@@ -54,10 +56,11 @@ function Payment() {
   console.log("장바구니 :", menuCounts);
 
   useEffect(() => {
-    getDocs(query(collection(db, "basket"))).then((QuerySnapshot) => {
+    const basketRef = collection(db, "basket");
+    getDocs(query(basketRef)).then((QuerySnapshot) => {
       const firesotrePayList = [];
-      QuerySnapshot.forEach((doc) => {
-        const basketItemName = doc.data().name;
+      QuerySnapshot.forEach((basketdoc) => {
+        const basketItemName = basketdoc.data().name;
         const menuRef = collection(db, "menu");
         getDocs(query(menuRef, where("name", "==", basketItemName))).then(
           (menuQuerySnapshot) => {
@@ -68,11 +71,19 @@ function Payment() {
                 where("name", "==", basketItemName)
               );
               getDocs(existingPayQuery).then((existingPaySnapshot) => {
+                existingPaySnapshot.forEach((existingPayDoc) => {
+                  const existingPayData = existingPayDoc.data();
+                  if (existingPayData.count !== basketdoc.data().count) {
+                    updateDoc(doc(db, "pay", existingPayDoc.id), {
+                      count: basketdoc.data().count,
+                    });
+                  }
+                });
                 if (existingPaySnapshot.empty) {
                   const docRef = addDoc(collection(db, "pay"), {
                     name: basketItemName,
                     price: menuDoc.data().price,
-                    count: doc.data().count,
+                    count: basketdoc.data().count,
                   }).then((docRef) => {
                     firesotrePayList.push(docRef);
                   });
@@ -82,10 +93,10 @@ function Payment() {
           }
         );
       });
-      setMenuCosts(firesotrePayList);
+      //setMenuCosts(firesotrePayList);
     });
   }, []);
-  console.log("Check");
+  //console.log("Check");
 
   useEffect(() => {
     getDocs(collection(db, "pay")).then((querySanpshots) => {
@@ -140,7 +151,7 @@ function Payment() {
             <div className={styles.eachMenu} key={index}>
               <span>{menu.name}</span>
               <div className={styles.amount}>
-                <div className="cost">{menu.price} 원</div>
+                <div className="cost">{menu.price * menu.count} 원</div>
               </div>
             </div>
           ))}
