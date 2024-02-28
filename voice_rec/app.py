@@ -57,7 +57,7 @@ def extract_key(food_name):
     data_search = pd.DataFrame(new_data)
 
     data_search.to_csv('data_for_search.csv', index = False) # 메뉴 명과 키워드가 함께 있는 데이터
-    print(data_search.head())
+    #print(data_search.head())
 
     df = pd.read_csv("data_for_search.csv")
     df2 = pd.DataFrame(columns=['name', 'keywords'])

@@ -1,11 +1,14 @@
 {
   "name": "binaryheading2",
   "version": "0.1.0",
+  "proxy": "http://localhost:5000",
+  "start": "react-scripts --expose-gc --max_old_space_size=12000 start",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.6.7",
     "bootstrap": "^5.3.3",
     "firebase": "^10.8.0",
     "react": "^18.2.0",
