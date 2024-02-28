@@ -44,6 +44,7 @@ function Basket() {
     await setDoc(doc(db, "basket", menu.id), {
       name: menu.name,
       count: menu.count + 1,
+      createdTime: menu.createdTime,
     });
     const updatedMenuCounts = menuCounts.map((item) =>
       item.id === menu.id ? { ...item, count: item.count + 1 } : item
@@ -55,6 +56,7 @@ function Basket() {
     await setDoc(doc(db, "basket", menu.id), {
       name: menu.name,
       count: menu.count > 1 ? menu.count - 1 : 1,
+      createdTime: menu.createdTime,
     });
     const updatedMenuCounts = menuCounts.map((item) =>
       item.id === menu.id ? { ...item, count: item.count - 1 } : item
