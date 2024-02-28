@@ -4,7 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios"; // axios 추가
 import { firestore } from "../firebase";
-import { QuerySnapshot, addDoc, collection, getDocs, getFirestore, query } from "firebase/firestore";
+import {
+  QuerySnapshot,
+  addDoc,
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+} from "firebase/firestore";
 
 function Order() {
   const [transcript, setTranscript] = useState("");
@@ -25,12 +32,13 @@ function Order() {
       .get("/recognize_speech")
       .then((response) => {
         const transcriptData = response.data.transcript;
+        setTranscript(transcriptData);
+        // 반환값이 'Could not understand audio' 일 경우 addDoc 하지 않는 작업 필요
         const transcriptDocRef = addDoc(collection(db, "basket"), {
           count: 1,
           createdTime: Math.floor(Date.now() / 1000),
           name: transcriptData,
         });
-        
       })
       .catch((error) => {
         console.error("Error during speech recognition:", error);
