@@ -1,11 +1,14 @@
 import PropTypes from "prop-types";
 import styles from "../style/Order.module.css";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios"; // axios 추가
+import { firestore } from "../firebase";
+import { QuerySnapshot, addDoc, collection, getDocs, getFirestore, query } from "firebase/firestore";
 
 function Order() {
   const [transcript, setTranscript] = useState("");
+  const db = getFirestore();
   const navigate = useNavigate();
 
   const goToSplash = () => {
@@ -21,7 +24,13 @@ function Order() {
     axios
       .get("/recognize_speech")
       .then((response) => {
-        setTranscript(response.data.transcript);
+        const transcriptData = response.data.transcript;
+        const transcriptDocRef = addDoc(collection(db, "basket"), {
+          count: 1,
+          createdTime: Math.floor(Date.now() / 1000),
+          name: transcriptData,
+        });
+        
       })
       .catch((error) => {
         console.error("Error during speech recognition:", error);

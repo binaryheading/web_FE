@@ -26,19 +26,21 @@ function Basket() {
   const [menuCounts, setMenuCounts] = useState([]);
 
   useEffect(() => {
-    getDocs(collection(db, "basket")).then((QuerySnapshot) => {
-      const firestoreMenuList = [];
-      QuerySnapshot.forEach((doc) => {
-        firestoreMenuList.push({
-          name: doc.data().name,
-          count: doc.data().count ?? 1,
-          cost: doc.data().cost,
+    getDocs(query(collection(db, "basket"), orderBy("createdTime")))
+      .then((querySnapshot) => {
+        const firestoreMenuList = [];
+        querySnapshot.forEach((doc) => {
+          firestoreMenuList.push({
+            id: doc.id,
+            name: doc.data().name,
+            count: doc.data().count ?? 1,
+            createdTime: doc.data().createdTime,
+          });
         });
-      });
       setMenuCounts(firestoreMenuList);
     });
   }, []);
-  
+  console.log(menuCounts);
 
   const navigate = useNavigate();
   const goToPayment = () => {
