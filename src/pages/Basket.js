@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styles from "../style/Basket.module.css";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, addDoc, deleteDoc, getDocs, doc, setDoc, query, orderBy, collection, QuerySnapshot } from "firebase/firestore"
+import { where, getFirestore, addDoc, deleteDoc, getDocs, doc, setDoc, query, orderBy, collection, QuerySnapshot } from "firebase/firestore"
 import { firestore } from "../firebase";
 
 function Basket() {
@@ -24,6 +24,8 @@ function Basket() {
 
   
   const [menuCounts, setMenuCounts] = useState([]);
+  const [menuCosts, setMenuCosts] = useState([]);
+
 
   useEffect(() => {
     getDocs(query(collection(db, "basket"), orderBy("createdTime")))
@@ -72,6 +74,31 @@ function Basket() {
       [menu]: prevCounts[menu] > 1 ? prevCounts[menu] - 1 : 1,
     }));
   };
+
+
+  useEffect(() => {
+    getDocs(query(collection(db, "basket"))).then((QuerySnapshot) => {
+      const firesotrePayList = [];
+      QuerySnapshot.forEach((doc) => {
+        const basketItemName = doc.data().name;
+        const menuRef = collection(db, "menu");
+        getDocs(query(menuRef, where("name", "==", basketItemName))).then((menuQuerySnapshot) => {
+          menuQuerySnapshot.forEach((menuDoc) => {
+            const docRef = addDoc(collection(db, "pay"), {
+              name: basketItemName,
+              price: menuDoc.data().price,
+              count: doc.data().count,
+            }).then((docRef) => {
+              firesotrePayList.push(docRef);
+            });
+          });
+        });
+      });
+      setMenuCosts(firesotrePayList);
+    });
+  }, []);
+  console.log(menuCosts);
+
 
 
   return (

@@ -19,32 +19,11 @@ function Payment() {
   });
   */
 
+  const [menuCounts, setMenuCounts] = useState([]);
   const [menuCosts, setMenuCosts] = useState([]);
+
   const [totalCost, setTotalCost] = useState(0);
   const db = getFirestore();
-
-  useEffect(() => {
-    getDocs(query(collection(db, "basket"))).then((QuerySnapshot) => {
-      const firesotrePayList = [];
-      QuerySnapshot.forEach((doc) => {
-        const basketItemName = doc.data().name;
-        const menuRef = collection(db, "menu");
-        getDocs(query(menuRef, where("name", "==", basketItemName))).then((menuQuerySnapshot) => {
-          menuQuerySnapshot.forEach((menuDoc) => {
-            const docRef = addDoc(collection(db, "pay"), {
-              name: basketItemName,
-              price: menuDoc.data().price,
-              count: doc.data().count,
-            }).then((docRef) => {
-              firesotrePayList.push(docRef);
-            });
-          });
-        });
-      });
-      setMenuCosts(firesotrePayList);
-    });
-  }, []);
-  console.log(menuCosts);
 
 
 
