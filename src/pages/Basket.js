@@ -10,6 +10,7 @@ import {
   query,
   orderBy,
   collection,
+  deleteDoc,
 } from "firebase/firestore";
 import { firestore } from "../firebase";
 
@@ -53,11 +54,15 @@ function Basket() {
   };
 
   const handleDecrement = async (menu) => {
-    await setDoc(doc(db, "basket", menu.id), {
-      name: menu.name,
-      count: menu.count > 1 ? menu.count - 1 : 1,
-      createdTime: menu.createdTime,
-    });
+    if (menu.count <= 1) {
+      await deleteDoc(doc(db, "basket", menu.id));
+    } else {
+      await setDoc(doc(db, "basket", menu.id), {
+        name: menu.name,
+        count: menu.count - 1,
+        createdTime: menu.createdTime,
+      });
+    }
     const updatedMenuCounts = menuCounts.map((item) =>
       item.id === menu.id ? { ...item, count: item.count - 1 } : item
     );

@@ -14,6 +14,7 @@ import {
   orderBy,
   updateDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 
 function Payment() {
@@ -84,6 +85,7 @@ function Payment() {
                     name: basketItemName,
                     price: menuDoc.data().price,
                     count: basketdoc.data().count,
+                    createdTime: basketdoc.data().createdTime,
                   }).then((docRef) => {
                     firesotrePayList.push(docRef);
                   });
@@ -95,17 +97,31 @@ function Payment() {
       });
       //setMenuCosts(firesotrePayList);
     });
+    const payRef = collection(db, "pay");
+    getDocs(query(payRef)).then((payquerySnapshot) => {
+      payquerySnapshot.forEach((paydoc) => {
+        const payItemName = paydoc.data().name;
+        getDocs(query(basketRef, where("name", "==", payItemName))).then(
+          (basketSnapshot) => {
+            if (basketSnapshot.empty) {
+              deleteDoc(doc(db, "pay", paydoc.id));
+            }
+          });
+        });
+    });
   }, []);
   //console.log("Check");
 
   useEffect(() => {
-    getDocs(collection(db, "pay")).then((querySanpshots) => {
+    getDocs(query(collection(db, "pay"), orderBy("createdTime")))
+    .then((querySanpshots) => {
       const firestorePayList = [];
       querySanpshots.forEach((doc) => {
         firestorePayList.push({
           name: doc.data().name,
           price: doc.data().price,
           count: doc.data().count,
+          createdTime: doc.data().createdTime,
         });
       });
       setMenuCosts(firestorePayList);
