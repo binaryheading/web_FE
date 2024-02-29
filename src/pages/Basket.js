@@ -11,6 +11,7 @@ import {
   orderBy,
   collection,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { firestore } from "../firebase";
 

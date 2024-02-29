@@ -2,8 +2,12 @@ import PropTypes from "prop-types";
 import styles from "../style/SplashPage.module.css";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/kiosk.png";
+import { useEffect } from "react";
+import { firestore } from "../firebase";
+import { addDoc, doc, query, getDoc,getDocs, collection, deleteDoc, getFirestore } from "firebase/firestore";
 
 function SplashPage() {
+  const db = getFirestore();
   const navigate = useNavigate();
   const goToOrder = () => {
     navigate("/order");
@@ -14,6 +18,51 @@ function SplashPage() {
   const goToRecentOrder = () => {
     navigate("/recentOrder");
   };
+
+  useEffect(() => {
+    const deleteAllDocuments = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "basket"));
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach(async (doc) => {
+            const docData = doc.data();
+            
+            if (docData.name !== "dummy") {
+              await deleteDoc(doc.ref);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting documents: ", error);
+      }
+    };
+
+    deleteAllDocuments();
+  }, []);
+
+  useEffect(() => {
+    const deleteAllPayDocuments = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "pay"));
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach(async (doc) => {
+            const docData = doc.data();
+            
+            if (docData.name !== "dummy") {
+              await deleteDoc(doc.ref);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting documents: ", error);
+      }
+    };
+
+    deleteAllPayDocuments();
+  }, []);
+
   return (
     <div className={styles.container}>
       <div>

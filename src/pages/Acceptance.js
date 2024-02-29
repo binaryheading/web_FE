@@ -5,39 +5,74 @@ import { useNavigate } from "react-router-dom";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { firestore } from "../firebase";
-import { QuerySnapshot, collection, getDocs, getFirestore } from "firebase/firestore";
+import { deleteDoc, doc, QuerySnapshot, collection, getDocs, getFirestore, orderBy, query, setDoc } from "firebase/firestore";
 
 function Payment() {
   const db = getFirestore();
   
-  const [menuCounts, setMenuCounts] = useState({
-    handmadeCutlet: 1,
-    longNamedMenu: 1,
-  });
-  const [menuCosts, setMenuCosts] = useState({
-    handmadeCutlet: 12000,
-    longNamedMenu: 9000,
-  });
+  const [menuCosts, setMenuCosts] = useState([]);
+  const [menuCounts, setMenuCounts] = useState([]);
+  //이건 없어도 되는데 지금 당장 실행이 안 되어서 일단 냅뒀어
 
-  //const [menuCounts, setMenuCounts] = useState([]);
-  //const [menuCosts, setMenuCosts] = useState([]);
 
-  /*
   useEffect(() => {
-    getDocs(collection(db, "menu")).then((querySnapshot) => {
-      const firestoreMenuList = [];
-      querySnapshot.forEach((doc) => {
-        firestoreMenuList.push({
-          name: doc.name,
-          count: doc.data().count,
-          cost: doc.data(),cost,
+    getDocs(query(collection(db, "pay"), orderBy("createdTime")))
+      .then((querySnapshot) => {
+        const firestorePayList = [];
+        querySnapshot.forEach((doc) => {
+          firestorePayList.push({
+            id: doc.id,
+            name: doc.data().name,
+            createdTime: doc.data().createdTime,
+            count: doc.data().count,
+            price: doc.data().price,
+          });
         });
+        setMenuCosts(firestorePayList);
+      })
+      .catch((error) => {
+        console.log("Error fetching pay counts: ", error);
       });
-      setMenuCounts(firestoreMenuList);
-    });
   }, []);
-  */
-  
+
+  useEffect(() => {
+    const deleteAllDocuments = async () => {
+      try {
+        const recentQuerySnapshot = await getDocs(collection(db, "recent"));
+        recentQuerySnapshot.forEach(async(doc) => {
+          const docData = doc.data();
+          if (docData.name !== "dummy") await deleteDoc(doc.ref);
+        });
+      }
+      catch (error) {
+        console.error("Error deleting documents: ", error);
+      }
+    };
+    deleteAllDocuments();
+    const fetchData = async () => {
+      try {
+        const payquerySnapshot = await getDocs(query(collection(db, "pay"), orderBy("createdTime")));
+        const batch = [];
+        payquerySnapshot.forEach((docu) => {
+          const payData = docu.data();
+        
+          const recentDocRef = doc(db, "recent", docu.id);
+          const recentData = {
+            name: payData.name,
+            createdTime: payData.createdTime,
+            count: payData.count,
+            price: payData.price,
+          };
+          batch.push(setDoc(recentDocRef, recentData));
+        });
+        await Promise.all(batch);
+      } catch (error) {
+        console.error('Error copying data: ', error);
+      }
+    
+    };
+    fetchData();
+  }, []);
 
   const navigate = useNavigate();
   const goToHome = () => {
@@ -47,6 +82,8 @@ function Payment() {
   const goToBack = () => {
     window.history.back();
   };
+
+
 
   return (
     <div className={styles.container}>
