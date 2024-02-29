@@ -75,7 +75,7 @@ function Basket() {
   };
 
   const goToBack = () => {
-    window.history.back();
+    navigate("/order");
   };
 
   return (

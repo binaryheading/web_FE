@@ -18,45 +18,11 @@ import {
 } from "firebase/firestore";
 
 function Payment() {
-  /*
-  const [menuCounts, setMenuCounts] = useState({
-    handmadeCutlet: 1,
-    longNamedMenu: 1,
-  });
-  const [menuCosts, setMenuCosts] = useState({
-    handmadeCutlet: 12000,
-    longNamedMenu: 9000,
-  });
-  */
-
   const [menuCounts, setMenuCounts] = useState([]);
   const [menuCosts, setMenuCosts] = useState([]);
 
   const [totalCost, setTotalCost] = useState(0);
   const db = getFirestore();
-
-  /*
-  useEffect(() => {
-    getDocs(query(collection(db, "basket"), orderBy("createdTime")))
-      .then((querySnapshot) => {
-        const firestoreMenuList = [];
-        querySnapshot.forEach((doc) => {
-          firestoreMenuList.push({
-            id: doc.id,
-            name: doc.data().name,
-            count: doc.data().count ?? 1,
-            createdTime: doc.data().createdTime,
-          });
-        });
-        setMenuCounts(firestoreMenuList);
-      })
-      .catch((error) => {
-        console.error("Error fetching menu counts: ", error);
-      });
-  }, []);
-  */
- 
-  console.log("장바구니 :", menuCounts);
 
   useEffect(() => {
     const basketRef = collection(db, "basket");
@@ -108,38 +74,49 @@ function Payment() {
             if (basketSnapshot.empty) {
               deleteDoc(doc(db, "pay", paydoc.id));
             }
+          }
+        );
+      });
+    });
+  }, []);
+  // console.log("Check");
+  console.log("장바구니 :", menuCounts);
+
+  useEffect(() => {
+    getDocs(query(collection(db, "pay"), orderBy("createdTime"))).then(
+      (querySanpshots) => {
+        const firestorePayList = [];
+        querySanpshots.forEach((doc) => {
+          firestorePayList.push({
+            name: doc.data().name,
+            price: doc.data().price,
+            count: doc.data().count,
+            createdTime: doc.data().createdTime,
           });
         });
-    });
-  }, []);
-  //console.log("Check");
-
-  useEffect(() => {
-    getDocs(query(collection(db, "pay"), orderBy("createdTime")))
-    .then((querySanpshots) => {
-      const firestorePayList = [];
-      querySanpshots.forEach((doc) => {
-        firestorePayList.push({
-          name: doc.data().name,
-          price: doc.data().price,
-          count: doc.data().count,
-          createdTime: doc.data().createdTime,
-        });
-      });
-      setMenuCosts(firestorePayList);
-    });
-  }, []);
+        setMenuCosts(firestorePayList);
+      }
+    );
+  }, [menuCounts, menuCosts]); // 수량 변경시 가격 갱신하여 화면에 렌더링
   console.log(menuCosts);
 
+  // 총 결제금액 계산 함수
+  const calculateTotalCost = () => {
+    let total = 0;
+    // menuCosts 리스트를 순회하면서 각 메뉴의 가격 * 개수를 더함
+    menuCosts.forEach((menu) => {
+      total += menu.price * menu.count;
+    });
+    return total;
+  };
+
+  // 총 결제금액을 계산하고 상태 업데이트
   useEffect(() => {
-    // 총 결제금액 계산
-    // Object.keys(menuCounts) : menuCounts 객체의 속성들을 배열로 가져오기
-    // reduce() 메서드 : 배열의 각 요소에 대해 주어진 콜백 함수를 실행하고 하나의 결과값을 반환
-    const total = Object.keys(menuCounts).reduce((acc, menu) => {
-      return acc + menuCosts[menu] * menuCounts[menu];
-    }, 0);
+    // calculateTotalCost 함수를 호출하여 총 결제금액을 계산
+    const total = calculateTotalCost();
+    // 총 결제금액 상태 업데이트
     setTotalCost(total);
-  }, [menuCounts, menuCosts]);
+  }, [menuCosts]); // menuCosts가 변경될 때마다 총 결제금액을 다시 계산하도록 useEffect에 menuCosts를 의존성으로 설정
 
   const navigate = useNavigate();
   const goToAcceptance = () => {
@@ -147,7 +124,7 @@ function Payment() {
   };
 
   const goToBack = () => {
-    window.history.back();
+    navigate("/basket");
   };
 
   return (
@@ -173,18 +150,6 @@ function Payment() {
               </div>
             </div>
           ))}
-          {/* <div className={styles.eachMenu}>
-            <span>수제왕돈까스</span>
-            <div className={styles.amount}>
-              <div className="cost">{menuCosts.handmadeCutlet} 원</div>
-            </div>
-          </div>
-          <div className={styles.eachMenu}>
-            <span>참치마요김밥</span>
-            <div className={styles.amount}>
-              <div className="cost">{menuCosts.longNamedMenu} 원</div>
-            </div>
-          </div> */}
         </div>
 
         <div className={styles.divider}></div>

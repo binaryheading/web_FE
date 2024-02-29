@@ -1,4 +1,18 @@
+@font-face {
+  font-family: "GamtanLoad-Regular";
+  font-weight: normal;
+  src: url("../fonts/감탄로드돋움체\ Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "GamtanLoad-Bold";
+  font-weight: normal;
+  src: url("../fonts/감탄로드돋움체\ Bold.ttf") format("truetype");
+}
+
 .container {
+  font-family: GamtanLoad-Bold;
+
   display: flex;
   flex-direction: column;
   align-items: center;

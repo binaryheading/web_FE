@@ -1,4 +1,12 @@
+@font-face {
+  font-family: "GamtanLoad-Bold";
+  font-weight: normal;
+  src: url("../fonts/감탄로드돋움체\ Bold.ttf") format("truetype");
+}
+
 .container {
+  font-family: GamtanLoad-Bold;
+
   background-color: rgb(29, 18, 83);
   height: 100vh;
 }

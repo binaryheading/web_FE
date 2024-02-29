@@ -20,7 +20,7 @@ def convert_to_list(text):
 
 def checking_food_name(food_name, data):
     matched_row = data[data['name'] == food_name]
-    if not matched_row.empty: 
+    if not matched_row.empty:
         return food_name
     else:
         matching_names = []
@@ -47,11 +47,11 @@ def extract_key(food_name):
     for i in range(len(scraping_result)) :
         docs_keywords = key.extract_keyword(scraping_result.iloc[[i]])
         new_data.append(docs_keywords)
-    
+
     for item in new_data:
         item['name'] = item['name'][0]  # 'name' 필드에서 대괄호를 제거합니다.
         item['keywords'] = list(word for sublist in item['keywords'] for word in sublist) # 'keywords' 리스트를 평탄화합니다.
-    
+
 
 
     data_search = pd.DataFrame(new_data)
@@ -63,15 +63,15 @@ def extract_key(food_name):
     df2 = pd.DataFrame(columns=['name', 'keywords'])
     df2['name'] = df['name']
     df2['keywords'] = df['keywords'].apply(eval)
-    
+
     result = checking_food_name(food_name, df2)
-    
+
     return result
-    
+
 
 
 def find_in_menu(food_name,data):
-    #if food_name in 
+    #if food_name in
 
     matched_row = data[data['name'] == food_name] # 띄어쓰기 대비 주의
     if not matched_row.empty:
@@ -105,7 +105,7 @@ def recognize_speech():
 
 flag1=0 # 첫 주문 시작할 때 0 메뉴가 정해지면 1
 #flag2=0 # 바로 메뉴 선정 완료 및 수량 정해야 하는 상황이면 1
-#flag3=0 # 
+#flag3=0 #
 
 @app.route("/")
 def index():
@@ -120,9 +120,13 @@ def recognize_speech_route():
 
         df = pd.read_csv("data_for_search_2.csv")
 
+        speak("잠시만 기다려 주세요.")
+
         if find_in_menu(transcript,df):
-            flag1=1
-            speak("원하시는 메뉴가 메뉴판에 존재합니다. 몇개 주문하시겠습니까?") # 수량은 살짝 애매할 듯
+            flag1=0
+            speak("원하시는 메뉴가 메뉴판에 존재합니다.") # 수량은 살짝 애매할 듯
+            message = "{} 음식이 장바구니에 담겼습니다.".format(transcript)  # 메시지에 transcript 내용을 포함하여 생성
+            speak(message)  # 메시지를 음성으로 재생
             return jsonify({"transcript": transcript})
         else:
             flag1=2
@@ -137,10 +141,13 @@ def recognize_speech_route():
             return jsonify({"transcript": transcript})
     else:
         transcript = recognize_speech()
+        message = "{} 음식이 장바구니에 담겼습니다.".format(transcript)  # 메시지에 transcript 내용을 포함하여 생성
+        speak(message)  # 메시지를 음성으로 재생
+        flag1=0
         return jsonify({"transcript": transcript})
-    
+
     #수량 인식 문제와 번역 메뉴가 리셋된다는 문제 발생
-    # elif flag1==2 and flag2==0 and flag3==0: # 두번째로 클릭하여 추천 메뉴 중 하나를 고를 때 flag==1 
+    # elif flag1==2 and flag2==0 and flag3==0: # 두번째로 클릭하여 추천 메뉴 중 하나를 고를 때 flag==1
     #     transcript = recognize_speech()
     #     speak(transcript+" 메뉴를 주문하셨습니다. 몇개 주문하시겠습니까?")
     #     flag2=1
