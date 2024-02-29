@@ -40,7 +40,8 @@ function Payment() {
       try {
         const recentQuerySnapshot = await getDocs(collection(db, "recent"));
         recentQuerySnapshot.forEach(async(doc) => {
-          await deleteDoc(doc.ref);
+          const docData = doc.data();
+          if (docData.name !== "dummy") await deleteDoc(doc.ref);
         });
       }
       catch (error) {

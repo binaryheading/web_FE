@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/kiosk.png";
 import { useEffect } from "react";
 import { firestore } from "../firebase";
-import { getDocs, collection, deleteDoc, getFirestore } from "firebase/firestore";
+import { addDoc, doc, query, getDoc,getDocs, collection, deleteDoc, getFirestore } from "firebase/firestore";
 
 function SplashPage() {
   const db = getFirestore();
@@ -18,23 +18,49 @@ function SplashPage() {
   const goToRecentOrder = () => {
     navigate("/recentOrder");
   };
+
   useEffect(() => {
     const deleteAllDocuments = async () => {
       try {
-        const payquerySnapshot = await getDocs(collection(db, "pay"));
-        payquerySnapshot.forEach(async(doc) => {
-          await deleteDoc(doc.ref);
-        });
-        const basketquerySnapshot = await getDocs(collection(db, "basket"));
-        basketquerySnapshot.forEach(async(doc) => {
-          await deleteDoc(doc.ref);
-        });
-      }
-      catch (error) {
+        const querySnapshot = await getDocs(collection(db, "basket"));
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach(async (doc) => {
+            const docData = doc.data();
+            
+            if (docData.name !== "dummy") {
+              await deleteDoc(doc.ref);
+            }
+          });
+        }
+      } catch (error) {
         console.error("Error deleting documents: ", error);
       }
     };
+
     deleteAllDocuments();
+  }, []);
+
+  useEffect(() => {
+    const deleteAllPayDocuments = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "pay"));
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach(async (doc) => {
+            const docData = doc.data();
+            
+            if (docData.name !== "dummy") {
+              await deleteDoc(doc.ref);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting documents: ", error);
+      }
+    };
+
+    deleteAllPayDocuments();
   }, []);
 
   return (
