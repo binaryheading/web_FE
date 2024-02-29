@@ -19,7 +19,7 @@ function Order() {
   const navigate = useNavigate();
 
   const goToSplash = () => {
-    window.history.back();
+    navigate("/");
   };
 
   const goToBasket = () => {
@@ -32,13 +32,18 @@ function Order() {
       .get("/recognize_speech")
       .then((response) => {
         const transcriptData = response.data.transcript;
-        setTranscript(transcriptData);
-        // 반환값이 'Could not understand audio' 일 경우 addDoc 하지 않는 작업 필요
-        const transcriptDocRef = addDoc(collection(db, "basket"), {
-          count: 1,
-          createdTime: Math.floor(Date.now() / 1000),
-          name: transcriptData,
-        });
+        // 반환값이 '' 이거나 'Could not understand audio' 일 경우 db에 추가하지 않음
+        if (transcriptData && transcriptData !== "Could not understand audio") {
+          setTranscript(transcriptData);
+          const transcriptDocRef = addDoc(collection(db, "basket"), {
+            count: 1,
+            createdTime: Math.floor(Date.now() / 1000),
+            name: transcriptData,
+          });
+        } else {
+          // transcriptData가 ""이거나 "Could not understand audio"인 경우에 대한 처리
+          console.log("No valid transcript data to add to the basket.");
+        }
       })
       .catch((error) => {
         console.error("Error during speech recognition:", error);

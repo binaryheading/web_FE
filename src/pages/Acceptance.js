@@ -5,57 +5,64 @@ import { useNavigate } from "react-router-dom";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { firestore } from "../firebase";
-import { deleteDoc, doc, QuerySnapshot, collection, getDocs, getFirestore, orderBy, query, setDoc } from "firebase/firestore";
+import {
+  deleteDoc,
+  doc,
+  QuerySnapshot,
+  collection,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  setDoc,
+} from "firebase/firestore";
 
 function Payment() {
   const db = getFirestore();
-  
-  const [menuCosts, setMenuCosts] = useState([]);
-  const [menuCounts, setMenuCounts] = useState([]);
-  //이건 없어도 되는데 지금 당장 실행이 안 되어서 일단 냅뒀어
 
+  const [menuCosts, setMenuCosts] = useState([]);
+  //const [menuCounts, setMenuCounts] = useState([]);
 
   useEffect(() => {
-    getDocs(query(collection(db, "pay"), orderBy("createdTime")))
-      .then((querySnapshot) => {
+    getDocs(query(collection(db, "pay"), orderBy("createdTime"))).then(
+      (querySanpshots) => {
         const firestorePayList = [];
-        querySnapshot.forEach((doc) => {
+        querySanpshots.forEach((doc) => {
           firestorePayList.push({
-            id: doc.id,
             name: doc.data().name,
-            createdTime: doc.data().createdTime,
-            count: doc.data().count,
             price: doc.data().price,
+            count: doc.data().count,
+            createdTime: doc.data().createdTime,
           });
         });
         setMenuCosts(firestorePayList);
-      })
-      .catch((error) => {
-        console.log("Error fetching pay counts: ", error);
-      });
+      }
+    );
   }, []);
+  console.log(menuCosts);
 
   useEffect(() => {
     const deleteAllDocuments = async () => {
       try {
         const recentQuerySnapshot = await getDocs(collection(db, "recent"));
-        recentQuerySnapshot.forEach(async(doc) => {
+        recentQuerySnapshot.forEach(async (doc) => {
           const docData = doc.data();
           if (docData.name !== "dummy") await deleteDoc(doc.ref);
         });
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Error deleting documents: ", error);
       }
     };
     deleteAllDocuments();
     const fetchData = async () => {
       try {
-        const payquerySnapshot = await getDocs(query(collection(db, "pay"), orderBy("createdTime")));
+        const payquerySnapshot = await getDocs(
+          query(collection(db, "pay"), orderBy("createdTime"))
+        );
         const batch = [];
         payquerySnapshot.forEach((docu) => {
           const payData = docu.data();
-        
+
           const recentDocRef = doc(db, "recent", docu.id);
           const recentData = {
             name: payData.name,
@@ -67,9 +74,8 @@ function Payment() {
         });
         await Promise.all(batch);
       } catch (error) {
-        console.error('Error copying data: ', error);
+        console.error("Error copying data: ", error);
       }
-    
     };
     fetchData();
   }, []);
@@ -82,8 +88,6 @@ function Payment() {
   const goToBack = () => {
     window.history.back();
   };
-
-
 
   return (
     <div className={styles.container}>
@@ -99,20 +103,17 @@ function Payment() {
 
       <div className={styles.contents}>
         <div className={styles.menuView}>
-          <div className={styles.eachMenu}>
-            <span>수제왕돈까스</span>
-            <div className={styles.amount}>
-              <div className="count">{menuCounts.handmadeCutlet} 개</div>
-              <div className="cost">{menuCosts.handmadeCutlet} 원</div>
+          {/* map 함수 사용하여 장바구니 메뉴별로 불러오기 */}
+          {menuCosts.map((menu, index) => (
+            <div className={styles.eachMenu} key={index}>
+              <span>
+                {menu.name} <b>{menu.count}개</b>
+              </span>
+              <div className={styles.amount}>
+                <div className="cost">{menu.price * menu.count} 원</div>
+              </div>
             </div>
-          </div>
-          <div className={styles.eachMenu}>
-            <span>이름이엄청긴메뉴임을 가정한</span>
-            <div className={styles.amount}>
-              <div className="count">{menuCounts.longNamedMenu} 개</div>
-              <div className="cost">{menuCosts.longNamedMenu} 원</div>
-            </div>
-          </div>
+          ))}
         </div>
         <div
           className={styles.acceptView}
@@ -121,7 +122,7 @@ function Payment() {
           <div className={styles.acceptNum}>
             <span>주문번호</span>
             <span style={{ fontSize: "xxx-large" }}>
-              <b>7번</b>
+              <b>1번</b>
             </span>
           </div>
           <ProgressBar className={styles.progressBar} variant="info" now={30} />
