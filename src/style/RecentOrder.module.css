@@ -1,0 +1,111 @@
+@font-face {
+  font-family: "GamtanLoad-Bold";
+  font-weight: normal;
+  src: url("../fonts/감탄로드돋움체\ Bold.ttf") format("truetype");
+}
+
+.container {
+  font-family: GamtanLoad-Bold;
+
+  background-color: rgb(29, 18, 83);
+  height: 100vh;
+}
+
+.tabBar {
+  background-color: white;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  font-size: larger;
+}
+
+.goBackBtn {
+  background-image: url("../assets/left.png");
+  width: 50px;
+  height: 50px;
+  background-repeat: round;
+  border: 0px;
+  background-color: white;
+  color: rgb(29, 18, 83);
+}
+.spacer {
+  width: 70px;
+  height: 50px;
+}
+
+.contents {
+  /* color: rgb(241, 227, 31); */
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  color: white;
+}
+
+.divider {
+  height: 0.5vh;
+  width: 90vh;
+  background-color: white;
+}
+
+.storeBtn {
+  min-height: 15vh;
+  height: 15vh;
+  width: 80vh;
+  font-size: 150%;
+  border-radius: 8vh;
+}
+
+.menuView {
+  overflow: auto;
+  display: block;
+  margin-top: 5vh;
+}
+
+.eachMenu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 80vh;
+  height: 15vh;
+  min-height: 15vh;
+  margin: 15px 5px;
+  padding: 15px;
+  border-radius: 15px;
+  background-color: white;
+  color: black;
+  font-size: x-large;
+}
+
+.amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.plusBtn {
+  background-image: url("../assets/plus.png");
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-repeat: round;
+  border: 0px;
+  background-color: white;
+  color: rgb(29, 18, 83);
+}
+
+.minusBtn {
+  background-image: url("../assets/minus.png");
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-repeat: round;
+  border: 0px;
+  background-color: white;
+  color: rgb(29, 18, 83);
+}
