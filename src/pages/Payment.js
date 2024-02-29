@@ -35,6 +35,7 @@ function Payment() {
   const [totalCost, setTotalCost] = useState(0);
   const db = getFirestore();
 
+  /*
   useEffect(() => {
     getDocs(query(collection(db, "basket"), orderBy("createdTime")))
       .then((querySnapshot) => {
@@ -53,6 +54,7 @@ function Payment() {
         console.error("Error fetching menu counts: ", error);
       });
   }, []);
+  */
 
   console.log("장바구니 :", menuCounts);
 
